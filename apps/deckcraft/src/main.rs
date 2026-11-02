@@ -223,7 +223,7 @@ fn main() -> eframe::Result {
     }
     let mut options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("PowerPoint")
+            .with_title("PowerPoint by rea-harjani")
             .with_inner_size([1440.0, 900.0])
             .with_min_inner_size([900.0, 560.0])
             .with_drag_and_drop(true)
