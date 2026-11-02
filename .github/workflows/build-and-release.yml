@@ -1,0 +1,131 @@
+name: Build and Release Multiplatform Assets
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows (EXE & ZIP)
+    runs-on: windows-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Windows release binary
+        run: cargo build --release --bin powerpoint
+
+      - name: Prepare Windows assets
+        shell: pwsh
+        run: |
+          mkdir dist
+          cp target/release/powerpoint.exe dist/
+          cp powerpoint.ico dist/
+          Compress-Archive -Path dist/* -DestinationPath PowerPoint-by-rea-harjani-windows-x64.zip
+          cp target/release/powerpoint.exe PowerPoint-by-rea-harjani-windows-x64.exe
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-assets
+          path: |
+            PowerPoint-by-rea-harjani-windows-x64.zip
+            PowerPoint-by-rea-harjani-windows-x64.exe
+
+  build-linux:
+    name: Build Linux (DEB, RPM, TAR.GZ)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev rpm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-deb and cargo-generate-rpm
+        run: |
+          cargo install cargo-deb || true
+          cargo install cargo-generate-rpm || true
+
+      - name: Build Linux release binary
+        run: cargo build --release --bin powerpoint
+
+      - name: Package Linux assets
+        run: |
+          mkdir -p dist
+          cp target/release/powerpoint dist/powerpoint-by-rea-harjani
+          tar -czvf PowerPoint-by-rea-harjani-linux-x86_64.tar.gz -C dist powerpoint-by-rea-harjani
+          # Generate deb package if configured
+          cargo deb -p deckcraft --no-build || true
+          # Generate rpm package if configured
+          cargo generate-rpm -p deckcraft || true
+          find target/ -name "*.deb" -exec cp {} ./PowerPoint-by-rea-harjani-linux-amd64.deb \; 2>/dev/null || true
+          find target/ -name "*.rpm" -exec cp {} ./PowerPoint-by-rea-harjani-linux-x86_64.rpm \; 2>/dev/null || true
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-assets
+          path: |
+            PowerPoint-by-rea-harjani-linux-x86_64.tar.gz
+            PowerPoint-by-rea-harjani-linux-amd64.deb
+            PowerPoint-by-rea-harjani-linux-x86_64.rpm
+
+  build-macos:
+    name: Build macOS (TAR.GZ)
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build macOS release binary
+        run: cargo build --release --bin powerpoint
+
+      - name: Package macOS assets
+        run: |
+          mkdir -p dist
+          cp target/release/powerpoint dist/powerpoint-by-rea-harjani
+          tar -czvf PowerPoint-by-rea-harjani-macos-universal.tar.gz -C dist powerpoint-by-rea-harjani
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-assets
+          path: PowerPoint-by-rea-harjani-macos-universal.tar.gz
+
+  release:
+    name: Publish Release Assets
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all built artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Flatten assets directory
+        run: |
+          mkdir -p release-files
+          find . -name "*.exe" -o -name "*.zip" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" | xargs -I {} cp {} release-files/ || true
+          ls -la release-files/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: release-files/*
+          generate_release_notes: true
