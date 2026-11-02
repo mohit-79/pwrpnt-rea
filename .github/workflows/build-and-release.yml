@@ -29,16 +29,16 @@ jobs:
           mkdir dist
           cp target/release/powerpoint.exe dist/
           cp powerpoint.ico dist/
-          Compress-Archive -Path dist/* -DestinationPath PowerPoint-by-rea-harjani-windows-x64.zip
-          cp target/release/powerpoint.exe PowerPoint-by-rea-harjani-windows-x64.exe
+          Compress-Archive -Path dist/* -DestinationPath PowerPoint-by-ArtCraft-windows-x64.zip
+          cp target/release/powerpoint.exe PowerPoint-by-ArtCraft-windows-x64.exe
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-assets
           path: |
-            PowerPoint-by-rea-harjani-windows-x64.zip
-            PowerPoint-by-rea-harjani-windows-x64.exe
+            PowerPoint-by-ArtCraft-windows-x64.zip
+            PowerPoint-by-ArtCraft-windows-x64.exe
 
   build-linux:
     name: Build Linux (DEB, RPM, TAR.GZ)
@@ -67,22 +67,22 @@ jobs:
         run: |
           mkdir -p dist
           cp target/release/powerpoint dist/powerpoint-by-rea-harjani
-          tar -czvf PowerPoint-by-rea-harjani-linux-x86_64.tar.gz -C dist powerpoint-by-rea-harjani
+          tar -czvf PowerPoint-by-ArtCraft-linux-x86_64.tar.gz -C dist powerpoint-by-rea-harjani
           # Generate deb package if configured
           cargo deb -p deckcraft --no-build || true
           # Generate rpm package if configured
           cargo generate-rpm -p deckcraft || true
-          find target/ -name "*.deb" -exec cp {} ./PowerPoint-by-rea-harjani-linux-amd64.deb \; 2>/dev/null || true
-          find target/ -name "*.rpm" -exec cp {} ./PowerPoint-by-rea-harjani-linux-x86_64.rpm \; 2>/dev/null || true
+          find target/ -name "*.deb" -exec cp {} ./PowerPoint-by-ArtCraft-linux-amd64.deb \; 2>/dev/null || true
+          find target/ -name "*.rpm" -exec cp {} ./PowerPoint-by-ArtCraft-linux-x86_64.rpm \; 2>/dev/null || true
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-assets
           path: |
-            PowerPoint-by-rea-harjani-linux-x86_64.tar.gz
-            PowerPoint-by-rea-harjani-linux-amd64.deb
-            PowerPoint-by-rea-harjani-linux-x86_64.rpm
+            PowerPoint-by-ArtCraft-linux-x86_64.tar.gz
+            PowerPoint-by-ArtCraft-linux-amd64.deb
+            PowerPoint-by-ArtCraft-linux-x86_64.rpm
 
   build-macos:
     name: Build macOS (TAR.GZ)
@@ -101,13 +101,13 @@ jobs:
         run: |
           mkdir -p dist
           cp target/release/powerpoint dist/powerpoint-by-rea-harjani
-          tar -czvf PowerPoint-by-rea-harjani-macos-universal.tar.gz -C dist powerpoint-by-rea-harjani
+          tar -czvf PowerPoint-by-ArtCraft-macos-universal.tar.gz -C dist powerpoint-by-rea-harjani
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-assets
-          path: PowerPoint-by-rea-harjani-macos-universal.tar.gz
+          path: PowerPoint-by-ArtCraft-macos-universal.tar.gz
 
   release:
     name: Publish Release Assets

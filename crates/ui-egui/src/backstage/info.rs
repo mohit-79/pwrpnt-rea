@@ -220,7 +220,7 @@ pub(super) fn account(app: &mut SlideApp, ui: &mut Ui) {
             ui.horizontal(|ui| {
                 let (r, _) = ui.allocate_exact_size(vec2(40.0, 40.0), Sense::hover());
                 crate::dialogs::paint_logo(ui.painter(), r);
-                ui.label(RichText::new("PowerPoint by rea-harjani").font(theme::bold(24.0)).color(t.text));
+                ui.label(RichText::new("PowerPoint by ArtCraft").font(theme::bold(24.0)).color(t.text));
             });
             dim(ui, &crate::dialogs::version_line());
             dim(ui, "Open source under MIT OR Apache-2.0. Not affiliated with Microsoft.");
@@ -228,8 +228,8 @@ pub(super) fn account(app: &mut SlideApp, ui: &mut Ui) {
             if task(
                 ui,
                 Icon::Help,
-                "About PowerPoint by rea-harjani",
-                "About PowerPoint by rea-harjani",
+                "About PowerPoint by ArtCraft",
+                "About PowerPoint by ArtCraft",
                 "The version, the people and models who built it, and where to find us.",
                 true,
             ) {

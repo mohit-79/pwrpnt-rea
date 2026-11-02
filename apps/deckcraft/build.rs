@@ -14,10 +14,10 @@ fn main() {
     }
     let mut res = winresource::WindowsResource::new();
     res.set_icon("../../assets/app-icon/deckcraft.ico")
-        .set("ProductName", "PowerPoint by rea-harjani")
-        .set("FileDescription", "PowerPoint by rea-harjani")
-        .set("CompanyName", "rea-harjani")
-        .set("LegalCopyright", "Copyright (c) rea-harjani. All rights reserved.")
+        .set("ProductName", "PowerPoint by ArtCraft")
+        .set("FileDescription", "PowerPoint by ArtCraft")
+        .set("CompanyName", "ArtCraft")
+        .set("LegalCopyright", "Copyright (c) ArtCraft Team. MIT OR Apache-2.0.")
         .set("OriginalFilename", "powerpoint.exe")
         .set("InternalName", "powerpoint");
     if let Err(e) = res.compile() {

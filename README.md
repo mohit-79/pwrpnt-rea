@@ -1,4 +1,4 @@
-# PowerPoint by rea-harjani
+# PowerPoint by ArtCraft
 
 > [!IMPORTANT]
 > ### Attribution & Full Credit to the Original Developers
